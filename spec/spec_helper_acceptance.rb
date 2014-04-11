@@ -48,6 +48,11 @@ hosts.each do |host|
   end
 end
 
+default_apply_opts = {}
+default_apply_opts[:parser] = 'future' if ENV['FUTURE_PARSER'] == 'true'
+#default_apply_opts['strict-variables'.to_sym] = true if ENV['STRICT_VARIABLES'] == 'true'
+hosts.each {|h| h[:default_apply_opts] = default_apply_opts }
+
 UNSUPPORTED_PLATFORMS = ['AIX','windows','Solaris','Suse']
 
 RSpec.configure do |c|

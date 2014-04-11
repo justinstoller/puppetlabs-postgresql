@@ -5,7 +5,7 @@ group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
   gem 'rspec-puppet', '~> 1.0'
   gem 'puppet-lint', '~> 0.3.2'
-  gem 'beaker',                  :require => false
+  gem 'beaker',                  :require => false, :git => 'git://github.com/justinstoller/beaker.git', :ref => 'a4c5708b846665136822388cd114894adaaf6531'
   gem 'beaker-rspec',            :require => false
   gem 'serverspec',              :require => false
 end
