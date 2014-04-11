@@ -34,6 +34,17 @@ def psql(psql_cmd, user = 'postgres', exit_codes = [0], &block)
   shell("su #{shellescape(user)} -c #{shellescape(psql)}", :acceptable_exit_codes => exit_codes, &block)
 end
 
+default_apply_opts = {}
+default_apply_opts[:parser] = 'future' if ENV['FUTURE_PARSER'] == 'true'
+default_apply_opts[:strict_variables] = nil if ENV['STRICT_VARIABLES'] == 'true'
+hosts.each {|h| h[:default_apply_opts] = default_apply_opts }
+
+if ENV['PUPPET_GEM_VERSION']
+  version_string = "-v '#{ENV['PUPPET_GEM_VERSION']}'"
+else
+  version_string = ''
+end
+
 hosts.each do |host|
   if host['platform'] =~ /debian/
     on host, 'echo \'export PATH=/var/lib/gems/1.8/bin/:${PATH}\' >> ~/.bashrc'
@@ -43,15 +54,10 @@ hosts.each do |host|
   else
     # Install Puppet
     install_package host, 'rubygems'
-    on host, 'gem install puppet --no-ri --no-rdoc'
+    on host, "gem install puppet #{version_string} --no-ri --no-rdoc"
     on host, "mkdir -p #{host['distmoduledir']}"
   end
 end
-
-default_apply_opts = {}
-default_apply_opts[:parser] = 'future' if ENV['FUTURE_PARSER'] == 'true'
-#default_apply_opts['strict-variables'.to_sym] = true if ENV['STRICT_VARIABLES'] == 'true'
-hosts.each {|h| h[:default_apply_opts] = default_apply_opts }
 
 UNSUPPORTED_PLATFORMS = ['AIX','windows','Solaris','Suse']
 
